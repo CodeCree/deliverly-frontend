@@ -25,23 +25,151 @@
 		<link rel="icon apple-touch-icon apple-touch-icon-precomposed" href="/logo-256.png"  type="image/png" sizes="256x256">
 		<link rel="icon apple-touch-icon apple-touch-icon-precomposed apple-touch-startup-image" href="/logo.png"  type="image/png" sizes="512x512">
 		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.6/dist/semantic.min.css">
+		<script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.6/dist/semantic.min.js"></script>
 	</head>
 	<body class="ui middle aligned center aligned grid" style="background-color: #eee;">
-		<div class="column" style="width: 30rem; max-width: 95vw;">
+		<div class="column" style="width: 30rem; max-width: 95vw;" id="tracking-code-div">
 			<div class="ui olive header">
 				<h1>Track Package</h1>
 			</div>
-			<form class="ui large form">
+			<form class="ui large form" id="tracking-code-form" onsubmit="submitTrackingCode(); return false;">
 				<div class="ui stacked segment">
-					<div class="field">
+					<div class="ui error message">
+						<div class="header">Invalid Code</div>
+						<p>We didn't recognise the code you entered.</p>
+					</div>
+
+					<div class="field" id="tracking-code-field">
 						<label>Tracking Code</label>
-						<input type="text" name="tracking-code" id="tracking-code" placeholder="Tracking Code" required>
+						<input type="text" name="tracking-code" id="tracking-code" placeholder="Tracking Code" required value="wood-citrus-art">
 					</div>
 
 					<button type="submit" class="ui fluid large olive submit button">Track</button>
 				</div>
 			</form>
 		</div>
+
+		<div class="column" style="width: 30rem; max-width: 95vw; display: none" id="package-div">
+			<div class="ui olive header">
+				<h1>Package <span id="package-id"></span></h1>
+			</div>
+			<div class="ui stacked segment">
+				<h2>Details</h2>
+				<ul>
+					<li><strong>Sent at </strong><span id="package-sent-at"></span></li>
+					<li><strong>Weight </strong><span id="package-weight"></span>kg</li>
+					<li><strong>Address </strong><span id="package-address"></span></li>
+				</ul>
+			</div>
+			<div class="ui stacked segment">
+				<h2>Trip</h2>
+				<div class="ui feed" id="package-history">
+				</div>
+			</div>
+			
+			<button class="ui fluid large olive button" onclick="resetForm()">Back</button>
+		</div>
+
+		<script>
+			function getPackage(trackingCode) {
+				if (trackingCode === 'wood-citrus-art') return {
+					id: 'wood-citrus-art',
+					weight: 1.00,
+					sentAt: '27/07/2020 22:15',
+					deliveredAt: null,
+					address: '1 John Street, London, LO1 100',
+
+					history: [
+						{
+							title: 'Sent',
+							type: 'sent',
+							at: '27/07/2020 22:15'
+						},
+						{
+							title: 'On transit to warehouse #1',
+							type: 'transit',
+							at: '30/07/2020 05:00'
+						},
+						{
+							title: 'Arrived at warehouse #1',
+							type: 'warehouse',
+							at: '30/07/2020 22:15'
+						}
+					]
+				}
+			}
+
+			function populatePackage(package) {
+				$('#package-id').text(package.id);
+				$('#package-weight').text(package.weight);
+				$('#package-sent-at').text(package.sentAt);
+				$('#package-address').text(package.address);
+
+				for (let event of package.history) {
+					let iconName = 'box';
+					switch (event.type) {
+						case 'sent':
+							iconName = 'paper plane';
+							break;
+						case 'transit':
+							iconName = 'shipping fast';
+							break;
+						case 'warehouse':
+							iconName = 'warehouse';
+							break;
+					}
+
+					$('#package-history').append(`
+					<div class="event">
+						<div class="label">
+							<i class="${iconName} icon"></i>
+						</div>
+						<div class="content">
+							<div class="date">
+								${event.at}
+							</div>
+							<div class="summary">
+								${event.title}
+							</div>
+						</div>
+					</div>
+					`);
+				}
+			}
+
+			function submitTrackingCode() {
+				$('#tracking-code-form').addClass('loading');
+				$('#tracking-code-form').removeClass('error');
+				$('#tracking-code-field').removeClass('error');
+
+				let code = $('#tracking-code').val();
+
+				if (code && code.length > 0) {
+					let package = getPackage(code);
+
+					if (package) {
+						$('#tracking-code-form').removeClass('loading');
+						$('#tracking-code').val('');
+						$('#tracking-code-div').css('display', 'none');
+
+						populatePackage(package);
+						$('#package-div').css('display', 'block');
+
+						return;
+					}
+				}
+
+				$('#tracking-code-form').removeClass('loading');
+				$('#tracking-code-form').addClass('error');
+				$('#tracking-code-field').addClass('error');
+			}
+
+			function resetForm() {
+				$('#package-div').css('display', 'none');
+				$('#tracking-code-div').css('display', 'block');
+			}
+		</script>
 	</body>
 </html>
