@@ -22,8 +22,8 @@ function Route() {
 		if (!navigator.geolocation) {
 			return console.log('Geolocation not supported');
 		}
-		sendLocation();
-		setInterval(sendLocation, 3000);
+		//sendLocation();
+		//setInterval(sendLocation, 3000);
 	}, []);
 
 	return (
