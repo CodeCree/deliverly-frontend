@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { Container, Menu, Button } from 'semantic-ui-react';
+import React from 'react';
+import { Container, Menu } from 'semantic-ui-react';
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
-import DeliveryRoutes from './DeliveryRoutes/Route';
+import DeliveryRoutes from './DeliveryRoutes/Routes';
 import QrCodeGenerator from './QrCodeGenerator';
 import Dashboard from './Dashboard';
 import PackageScanner from './PackageScanner';
@@ -13,12 +13,7 @@ function App() {
 				<Container>
 					<Menu.Item as={Link} header to="/">Deliverly</Menu.Item>
 
-					<Menu.Item as={Link} to="/">Dashboard</Menu.Item>
-					<Menu.Item as={Link} to="/routes">Routes</Menu.Item>
-
-					<Menu.Item position='right'>
-						Logout
-					</Menu.Item>
+					<Menu.Item position='right'>Logout</Menu.Item>
 				</Container>
 			</Menu>
 
