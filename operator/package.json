@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "jspdf": "^1.5.3",
     "mapbox-gl": "^1.11.1",
     "print-js": "^1.0.63",
     "qrcode": "^1.4.4",

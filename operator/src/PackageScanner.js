@@ -74,7 +74,7 @@ function PackageScanner() {
 				<Grid.Column>
 					<Header as="h2">Scanned Packages</Header>
 					
-					{ scannedPackages.map(scannedPackage => <ScannedPackage scannedPackage={scannedPackage} />)}
+					{ scannedPackages.map((scannedPackage, i) => <ScannedPackage scannedPackage={scannedPackage} key={i} />)}
 				</Grid.Column>
 			</Grid>
 			 

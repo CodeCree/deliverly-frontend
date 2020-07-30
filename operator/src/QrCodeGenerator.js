@@ -1,19 +1,22 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Container, Loader, Image as SemanticImage } from 'semantic-ui-react';
+import React, { useState } from 'react';
+import { Container, Loader, Header, Segment, Button } from 'semantic-ui-react';
 import QRCode from 'qrcode';
-import printJs from 'print-js';
+import jsPdf from 'jspdf';
 
 function QrCodeSheet() {
-	const [loading, setLoading] = useState(true);
-	const [sheetImage, setSheetImage] = useState(null);
-	let ref = useRef();
+	const [loading, setLoading] = useState(false);
 
-	useEffect(() => {
+	async function generateCodes() {
+		setLoading(true);
+
 		async function fetchStrings() {
 			//Take from backend
 			let strings = [];
+			
 			for (let i = 0; i < 16; i++) {
-				strings.push('deliverly' + Math.round(Math.random()*10000000000000000000000000000000000));
+				let random = Math.round(Math.random()*100000000000).toLocaleString('fullwide', {useGrouping:false, minimumIntegerDigits:12}) + Math.round(Math.random()*100000000000).toLocaleString('fullwide', {useGrouping:false, minimumIntegerDigits:12}) + Math.round(Math.random()*100000000000).toLocaleString('fullwide', {useGrouping:false, minimumIntegerDigits:12});
+
+				strings.push('deliverly' + random);
 			}
 			return strings;
 		}
@@ -27,59 +30,54 @@ function QrCodeSheet() {
 				}
 				catch (err) {
 					console.error('ERROR: ' + err);
-					return '';
+					return 'invalid';
 				}
 			}
 		}
-		async function generateCodes() {
-			let strings = await fetchStrings();
-
-			const canvas = ref.current;
-			const ctx = canvas.getContext('2d');
-			
-			ctx.fillStyle = 'blue';
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-			function addCode(str, xpos, ypos) {
-				return new Promise(async (resolve, reject) => {
-					let img = new Image();
-
-					img.onload = () => {
-						ctx.drawImage(img, xpos, ypos, 650, 650);
-						resolve();
-					}
-	
-					img.src = await generateQrCode(str);
-				});
-			}
-
-			for (let i = 0; i < 15; i++) {
-				let ypos = (i % 5)*650+128;
-				let xpos = 211;
-				if (i > 4) xpos = 915;
-				if (i > 9) xpos = 1625;
-
-				await addCode(strings[i], xpos, ypos);
-			}
-
-			setLoading(false);
-			setSheetImage(canvas.toDataURL());
-			printJs({printable: canvas.toDataURL(), type: 'image', imageStyle: 'width:100%'});
+		function formatDigits(number) {
+			if (number < 10) return '0' + number;
+			return number;
 		}
 
-		setLoading(true);
-		generateCodes();
-		
-	}, []);
+		let doc = new jsPdf();
+
+		let strings = await fetchStrings();
+
+		for (let i = 0; i < 15; i++) {
+			let ypos = (i % 5)*55+11;
+			let xpos = 17;
+			if (i > 4) xpos = 76;
+			if (i > 9) xpos = 138;
+
+			doc.addImage(await generateQrCode(strings[i]), 'PNG', xpos, ypos, 55, 55)
+		}
+
+		doc.text('Deliverly QR Codes', 105, 11, {
+			align: 'center'
+		});
+		let date = new Date();
+		let dateString = `${formatDigits(date.getFullYear())}${formatDigits(date.getMonth())}${formatDigits(date.getDate())}-${formatDigits(date.getHours())}${formatDigits(date.getMinutes())}${formatDigits(date.getSeconds())}`;
+		doc.text(dateString, 105, 290, {
+			align: 'center'
+		});
+
+		doc.save(`deliverly-qr-codes-${dateString}.pdf`);
+
+		setLoading(false);
+	}
 
 	return (
-		<>
-			{ loading && <Loader active>Loading</Loader> }
-			<canvas ref={ref} width={2480} height={3508} style={{display: 'none'}} />
+		<Container>
+			<Header as="h1">QR Code Generator</Header>
+			Click the button below to generate an A4 sheet of QR codes to stick on packages
 
-			{ sheetImage && <SemanticImage src={sheetImage} /> }
-		</>
-	)
+			<Segment>
+				{ loading ? <Loader active>Loading</Loader>
+				: <Button onClick={generateCodes}>Generate Codes</Button> }
+			</Segment>
+			 
+		</Container>
+	);
 }
 
 function QrCodeGenerator() {
