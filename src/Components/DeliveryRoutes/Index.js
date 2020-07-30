@@ -27,13 +27,17 @@ function IndexDeliveryRoutes() {
 		startTime: '30/07/2020 11:49'
 	}]);
 
+	function createRoute() {
+		console.log('Create route');
+	}
+
 	return (
 		<Container>
 			<Header as="h1">My Routes</Header>
 			Manage and create routes here
 
 			<Card.Group doubling itemsPerRow={4} style={{marginTop: '1rem'}}>
-				<Card link as={Link} to="/route/new" style={{padding: '1rem'}}>
+				<Card link style={{padding: '1rem'}} onClick={createRoute}>
 					<Icon name="plus" size="huge" color="light grey" link style={{margin: 'auto'}} />
 				</Card>
 
