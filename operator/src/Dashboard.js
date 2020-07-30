@@ -16,7 +16,7 @@ function Dashboard() {
 					</Card.Content>
 				</Card>
 
-				<Card link as={Link} to="/package/scan">
+				<Card link as={Link} to="/packages/scan">
 					<Card.Content>
 						<Icon name="eye" size="huge" color="grey" style={{marginBottom: '1.5rem'}}/>
 						<Card.Header>Scan QR Code</Card.Header>
