@@ -5,11 +5,9 @@
   "dependencies": {
     "jspdf": "^1.5.3",
     "mapbox-gl": "^1.11.1",
-    "print-js": "^1.0.63",
     "qrcode": "^1.4.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-map-gl": "^5.2.7",
     "react-qr-reader": "^2.2.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",

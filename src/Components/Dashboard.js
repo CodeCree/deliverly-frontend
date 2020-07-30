@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container, Header, Card, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import Map from './Map';
 
 function Dashboard() {
 	return (
@@ -39,7 +40,42 @@ function Dashboard() {
 						<Card.Description>Manage your account</Card.Description>
 					</Card.Content>
 				</Card>
+
+				<Card link as={Link} to="/routes/all">
+					<Card.Content>
+						<Icon name="map" size="huge" color="grey" style={{marginBottom: '1.5rem'}}/>
+						<Card.Header>All Routes</Card.Header>
+						<Card.Description>Manage routes</Card.Description>
+					</Card.Content>
+				</Card>
+
+				<Card link as={Link} to="/packages">
+					<Card.Content>
+						<Icon name="boxes" size="huge" color="grey" style={{marginBottom: '1.5rem'}}/>
+						<Card.Header>Packages</Card.Header>
+						<Card.Description>Manage packages</Card.Description>
+					</Card.Content>
+				</Card>
+
+				<Card link as={Link} to="/users">
+					<Card.Content>
+						<Icon name="users" size="huge" color="grey" style={{marginBottom: '1.5rem'}}/>
+						<Card.Header>Users</Card.Header>
+						<Card.Description>Manage users</Card.Description>
+					</Card.Content>
+				</Card>
+
+				<Card link as={Link} to="/warehouses">
+					<Card.Content>
+						<Icon name="warehouse" size="huge" color="grey" style={{marginBottom: '1.5rem'}}/>
+						<Card.Header>Warehouses</Card.Header>
+						<Card.Description>Manage warehouses</Card.Description>
+					</Card.Content>
+				</Card>
 			</Card.Group>
+
+			<Header as="h2">Current Drivers</Header>
+			<Map />
 		</Container>
 	);
 }

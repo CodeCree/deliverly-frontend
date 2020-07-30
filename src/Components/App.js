@@ -10,6 +10,11 @@ import IndexDeliveryRoutes from './DeliveryRoutes/Index';
 import ShowDeliveryRoute from './DeliveryRoutes/Show';
 import CreateDeliveryRoute from './DeliveryRoutes/Create';
 
+import Users from './Operators/Users';
+import Packages from './Operators/Packages';
+import Warehouses from './Operators/Warehouses';
+import AllRoutes from './Operators/Routes';
+
 function App() {
 	return (
 		<Router>
@@ -29,6 +34,11 @@ function App() {
 				<Route path="/routes" component={IndexDeliveryRoutes} />
 				<Route path="/packages/scan" component={PackageScanner} />
 				<Route path="/qr-codes" component={QrCodeGenerator} />
+
+				<Route path="/users" exact component={Users} />
+				<Route path="/packages" exact component={Packages} />
+				<Route path="/warehouses" exact component={Warehouses} />
+				<Route path="/routes/all" exact component={AllRoutes} />
 
 				<Route>
 					<Redirect to="/" />

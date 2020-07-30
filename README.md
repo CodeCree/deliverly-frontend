@@ -6,6 +6,7 @@ A [CodeCree](https://www.codecree.co.uk) project as part of the [Knightshield Ha
 
 ## Installation
 1. Run `npm install`
+2. Copy `.env` to `.env.local` and add empty fields
 
 ## Running
 1. Run `npm start`
