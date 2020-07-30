@@ -6,7 +6,7 @@ function RouteCard(props) {
 	const { route } = props;
 
 	return (
-		<Card link as={Link} to={`/routes/${route.id}`}>
+		<Card link as={Link} to={`/route/${route.id}`}>
 			<Image src={route.mapImage} alt="An image of the map of the route" />
 			<Card.Content>
 				<Card.Header>{route.startTime}</Card.Header>
@@ -19,7 +19,7 @@ function RouteCard(props) {
 	);
 }
 
-function Routes() {
+function IndexDeliveryRoutes() {
 	const [ routes, setRoutes ] = useState([{
 		id: 'asda214',
 		mapImage: 'https://miro.medium.com/max/4800/0*hGYjDjU-YL4ipJvI.',
@@ -33,7 +33,7 @@ function Routes() {
 			Manage and create routes here
 
 			<Card.Group doubling itemsPerRow={4} style={{marginTop: '1rem'}}>
-				<Card link as={Link} to="/routes/new" style={{padding: '1rem'}}>
+				<Card link as={Link} to="/route/new" style={{padding: '1rem'}}>
 					<Icon name="plus" size="huge" color="light grey" link style={{margin: 'auto'}} />
 				</Card>
 
@@ -44,4 +44,4 @@ function Routes() {
 	);
 }
 
-export default Routes;
+export default IndexDeliveryRoutes;

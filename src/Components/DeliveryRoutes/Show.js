@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Container, Header } from 'semantic-ui-react';
 
-function Route() {
+function DeliveryRoute() {
 	useEffect(() => {
 		function sendLocation() {
 			try {
@@ -33,4 +33,4 @@ function Route() {
 	);
 }
 
-export default Route;
+export default DeliveryRoute;
