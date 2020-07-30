@@ -24,21 +24,21 @@ function Warehouses() {
 				<Modal.Content>
 					{ error && <Message negative>{error}</Message> }
 					<Form onSubmit={createWarehouse}>
-						<Form.Field>
+						<Form.Field required>
 							<label>Name</label>
 							<Input fluid placeholder="Name" required value={name} onChange={(e, state) => setName(state.value)} />
 						</Form.Field>
 	
 						<Form.Group widths="equal">
-							<Form.Field>
+							<Form.Field required>
 								<label>Street</label>
 								<Input fluid placeholder="Street" required value={street} onChange={(e, state) => setStreet(state.value)} />
 							</Form.Field>
-							<Form.Field>
+							<Form.Field required>
 								<label>Town</label>
 								<Input fluid placeholder="Town" required value={town} onChange={(e, state) => setTown(state.value)} />
 							</Form.Field>
-							<Form.Field>
+							<Form.Field required>
 								<label>Postcode</label>
 								<Input fluid placeholder="Postcode" required value={postcode} onChange={(e, state) => setPostcode(state.value)} />
 							</Form.Field>
@@ -83,21 +83,21 @@ function Warehouses() {
 				<Modal.Content>
 					{ error && <Message negative>{error}</Message> }
 					<Form onSubmit={updateWarehouse}>
-						<Form.Field>
+						<Form.Field required>
 							<label>Name</label>
 							<Input fluid placeholder="Name" required value={name} onChange={(e, state) => setName(state.value)} />
 						</Form.Field>
 	
 						<Form.Group widths="equal">
-							<Form.Field>
+							<Form.Field required>
 								<label>Street</label>
 								<Input fluid placeholder="Street" required value={street} onChange={(e, state) => setStreet(state.value)} />
 							</Form.Field>
-							<Form.Field>
+							<Form.Field required>
 								<label>Town</label>
 								<Input fluid placeholder="Town" required value={town} onChange={(e, state) => setTown(state.value)} />
 							</Form.Field>
-							<Form.Field>
+							<Form.Field required>
 								<label>Postcode</label>
 								<Input fluid placeholder="Postcode" required value={postcode} onChange={(e, state) => setPostcode(state.value)} />
 							</Form.Field>

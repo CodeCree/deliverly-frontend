@@ -6,7 +6,7 @@ import Map from './Map';
 function Dashboard() {
 	return (
 		<Container>
-			<Header as="h2">Welcome to Deliverly, user!</Header>
+			<Header as="h1">Welcome to Deliverly, user!</Header>
 
 			<Card.Group itemsPerRow={4} doubling>
 				<Card link as={Link} to="/routes">

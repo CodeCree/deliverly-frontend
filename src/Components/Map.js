@@ -2,9 +2,6 @@ import React, { createRef, useEffect, useState } from 'react';
 import { Segment, ItemDescription, ItemExtra } from 'semantic-ui-react';
 import mapboxgl from 'mapbox-gl';
 
-mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
-console.log(process.env);
-
 function Map(props) {
 	const [ map, setMap ] = useState(null);
 	const ref = createRef();
@@ -13,7 +10,7 @@ function Map(props) {
 	useEffect(() => {
 		if (!items) return;
 		if (items.length === 0) return;
-
+		mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 		let _map = new mapboxgl.Map({
 			container: ref.current,
 			style: 'mapbox://styles/mapbox/streets-v11',
