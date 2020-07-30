@@ -35,10 +35,10 @@ function App() {
 				<Route path="/packages/scan" component={PackageScanner} />
 				<Route path="/qr-codes" component={QrCodeGenerator} />
 
-				<Route path="/users" exact component={Users} />
-				<Route path="/packages" exact component={Packages} />
-				<Route path="/warehouses" exact component={Warehouses} />
-				<Route path="/routes/all" exact component={AllRoutes} />
+				<Route path="/users" component={Users} />
+				<Route path="/packages" component={Packages} />
+				<Route path="/warehouses" component={Warehouses} />
+				<Route path="/routes/all" component={AllRoutes} />
 
 				<Route>
 					<Redirect to="/" />
