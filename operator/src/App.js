@@ -3,6 +3,7 @@ import { Container, Menu, Button } from 'semantic-ui-react';
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
 import DeliveryRoutes from './DeliveryRoutes/Route';
 import QrCodeGenerator from './QrCodeGenerator';
+import Dashboard from './Dashboard';
 
 function App() {
 	return (
@@ -21,11 +22,13 @@ function App() {
 			</Menu>
 
 			<Switch>
-				<Route path="/" exact>Dashboard</Route>
+				<Route path="/" exact>
+					<Dashboard />
+				</Route>
 				<Route path="/routes">
 					<DeliveryRoutes />
 				</Route>
-				<Route path="/qr-code-generator">
+				<Route path="/qr-codes">
 					<QrCodeGenerator />
 				</Route>
 				<Route>
