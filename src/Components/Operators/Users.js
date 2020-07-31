@@ -12,9 +12,10 @@ function Users(props) {
 		const [ lastName, setLastName ] = useState('');
 		const [ email, setEmail ] = useState('');
 		const [ password, setPassword ] = useState('');
+		const [ operator, setOperator ] = useState(false);
 
 		function createUser() {
-			fetch(`${process.env.REACT_APP_API_ENDPOINT}/users/register`, {
+			fetch(`${process.env.REACT_APP_API_ENDPOINT}/users`, {
 				method: 'POST',
 				headers: {
 					'Authorization': props.user.token,
@@ -24,14 +25,14 @@ function Users(props) {
 					firstName: firstName,
 					lastName: lastName,
 					email: email,
-					password: password
+					password: password,
+					operator: operator
 				})
 			})
 			.then((response) => {
 				response.json().then(data => {
-					console.log(data);
 					if (!data.success) {
-						setError(data.error || data.message || 'An error occured. Please try again later');
+						setError(data.error || 'An error occured. Please try again later');
 						return setLoading(false);
 					}
 
@@ -80,6 +81,8 @@ function Users(props) {
 								<Input fluid placeholder="Password" type="password" required value={password} onChange={(e, state) => setPassword(state.value)} />
 							</Form.Field>
 						</Form.Group>
+
+						<Form.Checkbox inline label='Operator' checked={operator} onChange={(e, state) => setOperator(state.checked)} />
 	
 						<Button type="submit">Create</Button>
 					</Form>
@@ -103,7 +106,7 @@ function Users(props) {
 		const [ name, setName ] = useState('');
 
 		useEffect(() => {
-			const user = users.find(user => user._id === id);
+			const user = users.find(user => user.id === id);
 			if (!user) return setRedirect("/users");
 
 			setFirstName(user.firstName);
@@ -114,7 +117,7 @@ function Users(props) {
 		}, [id]);
 	
 		function updateUser() {
-			fetch(`${process.env.REACT_APP_API_ENDPOINT}/user/${id}`, {
+			fetch(`${process.env.REACT_APP_API_ENDPOINT}/users/${id}`, {
 				method: 'PUT',
 				headers: {
 					'Authorization': props.user.token,
@@ -124,20 +127,20 @@ function Users(props) {
 					firstName: firstName,
 					lastName: lastName,
 					email: email,
-					password: password,
+					password: password || undefined,
 					operator: operator
 				})
 			})
 			.then((response) => {
 				response.json().then(data => {
 					if (!data.success) {
-						setError(data.error || data.message || 'An error occured. Please try again later');
+						setError(data.error || 'An error occured. Please try again later');
 						return setLoading(false);
 					}
 
+					setRedirect(`/users`);
 					setError(null);
 					setUsers(data.data);
-					setRedirect(`/users`);
 					return setLoading(false);
 	
 				}).catch((error) => {
@@ -175,9 +178,9 @@ function Users(props) {
 								<label>Email</label>
 								<Input fluid placeholder="Email" type="email" required value={email} onChange={(e, state) => setEmail(state.value)} />
 							</Form.Field>
-							<Form.Field required>
-								<label>Password</label>
-								<Input fluid placeholder="Password" type="password" required value={password} onChange={(e, state) => setPassword(state.value)} />
+							<Form.Field>
+								<label>Password Change</label>
+								<Input fluid placeholder="Password Change" type="password" value={password} onChange={(e, state) => setPassword(state.value)} />
 							</Form.Field>
 						</Form.Group>
 
@@ -194,7 +197,7 @@ function Users(props) {
 	function UserCard(props) {
 		const { user } = props;
 		return (
-			<Card link as={Link} to={`/users/${user._id}`} color={user.operator && 'teal'}>
+			<Card link as={Link} to={`/users/${user.id}`} color={user.operator && 'teal'}>
 				<Card.Content>
 					<Card.Header>{user.firstName} {user.lastName}</Card.Header>
 					<Card.Meta>
