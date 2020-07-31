@@ -24,7 +24,6 @@ function QrCodeSheet(props) {
 							resolve('');
 						}
 	
-						console.log(data);
 						resolve(data.data);
 		
 					}).catch((error) => {
@@ -40,11 +39,11 @@ function QrCodeSheet(props) {
 		}
 		async function generateQrCode(str) {
 			try {
-				return await QRCode.toDataURL(str, { errorCorrectionLevel: 'Q' });
+				return await QRCode.toDataURL(str, { errorCorrectionLevel: 'H' });
 			}
 			catch (err) {
 				try {
-					return await QRCode.toDataURL(str, { errorCorrectionLevel: 'Q' });
+					return await QRCode.toDataURL(str, { errorCorrectionLevel: 'H' });
 				}
 				catch (err) {
 					console.error('ERROR: ' + err);
@@ -67,6 +66,7 @@ function QrCodeSheet(props) {
 			if (i > 4) xpos = 76;
 			if (i > 9) xpos = 138;
 
+			console.log(strings[i].length);
 			doc.addImage(await generateQrCode(strings[i]), 'PNG', xpos, ypos, 55, 55)
 		}
 
@@ -74,7 +74,7 @@ function QrCodeSheet(props) {
 			align: 'center'
 		});
 		let date = new Date();
-		let dateString = `${formatDigits(date.getFullYear())}${formatDigits(date.getMonth())}${formatDigits(date.getDate())}-${formatDigits(date.getHours())}${formatDigits(date.getMinutes())}${formatDigits(date.getSeconds())}`;
+		let dateString = `${formatDigits(date.getFullYear())}${formatDigits(date.getMonth()+1)}${formatDigits(date.getDate())}-${formatDigits(date.getHours())}${formatDigits(date.getMinutes())}${formatDigits(date.getSeconds())}`;
 		doc.text(dateString, 105, 290, {
 			align: 'center'
 		});
@@ -89,9 +89,9 @@ function QrCodeSheet(props) {
 			<Header as="h1">QR Code Generator</Header>
 			Click the button below to generate an A4 sheet of QR codes to stick on packages
 
-			<Segment>
-				{ loading ? <Loader active>Loading</Loader>
-				: <Button onClick={generateCodes}>Generate Codes</Button> }
+			<Segment style={{minHeight: '7rem'}}>
+				{ loading ? <Loader active style={{margin: '0.5rem'}}>Loading</Loader>
+				: <Button onClick={generateCodes} size="huge" style={{margin: '0.5rem'}}>Generate Codes</Button> }
 			</Segment>
 			 
 		</Container>
