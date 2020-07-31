@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Container, Header, Segment, Message, Grid, Card, Icon } from 'semantic-ui-react';
+import { Container, Header, Segment, Message, Grid, Card, Icon, Loader, Dimmer } from 'semantic-ui-react';
 import QrReader from 'react-qr-reader';
+
+import CreatePackage from './Packages/Create';
 
 function ScannedPackage(props) {
 	const { scannedPackage } = props;
@@ -23,33 +25,64 @@ function ScannedPackage(props) {
 	)
 }
 
-function PackageScanner() {
+function PackageScanner(props) {
+	const { user } = props;
 	const [ error, setError ] = useState(null);
+	const [ loading, setLoading ] = useState(false);
 	const [ showReader, setShowReader ] = useState(true);
 	const [ lastScan, setLastScan ] = useState(null);
 	const [ scannedPackages, setScannedPackages ] = useState([]);
+
+	const [ createPackageCode, setCreatePackageCode ] = useState();
+
+	function addPackageToList(_package) {
+		let _packages = scannedPackages;
+		_packages.unshift({
+			code: _package.code,
+			customer: {
+				name: _package.recipient,
+				email: _package.email
+			},
+			address: _package.address
+		})
+		setScannedPackages(_packages);
+	}
+	
 
 	function handleScan(data) {
 		if (data) {
 			if (lastScan === data) return;
 			if (data.length !== 34 || !data.startsWith('de')) return setError('Invalid QR code');
 
-			//Check data
-
-			let packages = scannedPackages.slice();
-			packages.unshift({
-				'code': 'i-like-cheese',
-				'customer': {
-					'name': 'Bob Bobson',
-					'email': 'email@email.com'
-				},
-				'address': {
-					'street': '1 London Road',
-					'city': 'London',
-					'postcode': 'LO1 001'
+			setLoading(true);
+			fetch(`${process.env.REACT_APP_API_ENDPOINT}/package/${data}`, {
+				headers: {
+					'Authorization': user.token
 				}
+			})
+			.then((response) => {
+				response.json().then(_data => {
+					setError(null);
+
+					if (!_data.success) {
+						setCreatePackageCode(data);
+					}
+					else {
+						addPackageToList(_data.data);
+					}
+
+					return setLoading(false);
+	
+				}).catch((error) => {
+					setError('An error occured. Please try again later');
+					return setLoading(false);
+				});
+			})
+			.catch((error) => {
+				setError('An error occured. Please try again later');
+				return setLoading(false);
 			});
-			setScannedPackages(packages);
+
 			setLastScan(data);
 		}
 	}
@@ -64,6 +97,9 @@ function PackageScanner() {
 			Please scan a package using your camera
 
 			{ error && <Message negative>{error}</Message> }
+			{ loading && <Dimmer active><Loader active>Loading</Loader></Dimmer> }
+
+			{ createPackageCode && <CreatePackage code={createPackageCode} token={user.token} close={() => setCreatePackageCode(null)} created={_package => addPackageToList(_package)} /> }
 
 			<Grid columns={2} stackable>
 				{ showReader && <Grid.Column>

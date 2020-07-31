@@ -1,21 +1,37 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Header, Button, List, Card, CardDescription } from 'semantic-ui-react';
+import { Container, Header, Button, List, Card, CardDescription, Dimmer, Loader } from 'semantic-ui-react';
+import { useParams, Redirect } from 'react-router-dom';
 
-function DeliveryRoute() {
-	const [ packages, setPackages ] = useState([
-		{
-			code: 'random-package-here'
-		},
-		{
-			code: 'i-like-cheese'
-		},
-		{
-			code: 'bob-and-dave'
-		}
-	]);
+function DeliveryRoute(props) {
+	const { user } = props;
+	const { id } = useParams();
+	const [ route, setRoute ] = useState(null);
+	const [ redirect, setRedirect ] = useState(null);
 	const [trackingLocation, setTrackingLocation] = useState(0);
 
+	useEffect(() => {
+		fetch(`${process.env.REACT_APP_API_ENDPOINT}/route/${id}`, {
+			headers: {
+				'Authorization': user.token
+			}
+		})
+		.then((response) => {
+			response.json().then(data => {
+				if (!data.success) {
+					return setRedirect('/routes');
+				}
 
+				setRoute(data.data);
+				console.log(data.data);
+
+			}).catch((error) => {
+				setRedirect('/routes');
+			});
+		})
+		.catch((error) => {
+			setRedirect('/routes');
+		});
+	}, []);
 
 	useEffect(() => {
 		function sendLocation() {
@@ -45,18 +61,22 @@ function DeliveryRoute() {
 		<Container>
 			<Header as="h1">Route</Header>
 
+			{ !route && <Dimmer active><Loader active>Loading</Loader></Dimmer> }
+			{ redirect && <Redirect to={redirect} /> }
+
+			{ route && <>
 			<List>
 				<List.Item>
 					<List.Icon name="boxes" />
-					<List.Content><strong>Packages: </strong>0</List.Content>
+					<List.Content><strong>Packages: </strong>{route.packages.length}</List.Content>
 				</List.Item>
 				<List.Item>
 					<List.Icon name="clock" />
-					<List.Content><strong>Started at: </strong>30/07/2020 22:55</List.Content>
+					<List.Content><strong>Started at: </strong>{route.startedAt || 'Not Started'}</List.Content>
 				</List.Item>
 				<List.Item>
 					<List.Icon name="clock" />
-					<List.Content><strong>Ended at: </strong></List.Content>
+					<List.Content><strong>Ended at: </strong>{route.endedAt || 'Not Ended'}</List.Content>
 				</List.Item>
 				<List.Item>
 					<List.Icon name="location arrow" />
@@ -69,14 +89,16 @@ function DeliveryRoute() {
 			<Header as="h2">Packages</Header>
 			<Button>Scan New Package</Button>
 			<Card.Group doubling itemsPerRow={6} style={{marginTop: '1rem'}}>
-				{ packages.map(parcel => (
+				{ route.packages.map(parcel => (
 					<Card key={parcel.code} >
 						<Card.Content>
 							<Card.Header>{parcel.code}</Card.Header>
 						</Card.Content>
 					</Card>
 				))}
-			</Card.Group>
+			</Card.Group> 
+			</>
+			}
 			
 		</Container>
 	);

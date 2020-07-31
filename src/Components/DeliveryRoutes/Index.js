@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Header, Card, Icon, Image, Modal, Form, Dropdown, Message, Button } from 'semantic-ui-react';
+import { Container, Header, Card, Icon, Modal, Form, Dropdown, Message, Button, Dimmer, Loader } from 'semantic-ui-react';
 import { Link, Redirect } from 'react-router-dom';
 
 function IndexDeliveryRoutes(props) {
@@ -7,14 +7,21 @@ function IndexDeliveryRoutes(props) {
 		const { route } = props;
 	
 		return (
-			<Card link as={Link} to={`/route/${route.id}`}>
-				<Image src={route.mapImage} alt="An image of the map of the route" />
+			<Card link as={Link} to={`/route/${route._id}`}>
 				<Card.Content>
-					<Card.Header>{route.startTime}</Card.Header>
+					<Card.Header>Route</Card.Header>
 					<Card.Meta>
 						<Icon name="box" />
-						<span className="number">{route.packageCount} packages</span>
+						<span className="number"><strong>Packages: </strong>{route.packages.length}</span>
 					</Card.Meta>
+					{route.startedAt && <Card.Meta>
+						<Icon name="clock" />
+						<span className="number"><strong>Started at: </strong>{route.startedAt}</span>
+					</Card.Meta> }
+					{ route.endedAt && <Card.Meta>
+						<Icon name="clock" />
+						<span className="number"><strong>Ended at: </strong>{route.endedAt}</span>
+					</Card.Meta> }
 				</Card.Content>
 			</Card>
 		);
@@ -45,20 +52,20 @@ function IndexDeliveryRoutes(props) {
 					setError(null);
 					
 					setWarehouses(data.data.map(warehouse => { return {
-						key: warehouse.uuid,
-						value: warehouse.uuid,
-						text: `${warehouse.name} - ${warehouse.address.street}, ${warehouse.address.city}, ${warehouse.address.postcode}`
+						key: warehouse.id,
+						value: warehouse.id,
+						text: `${warehouse.name} - ${warehouse.address.street}, ${warehouse.address.town}, ${warehouse.address.postcode}`
 					}}));
 
 					return setLoading(false);
 	
 				}).catch((error) => {
-					setError(error || 'An error occured. Please try again later');
+					setError('An error occured. Please try again later');
 					return setLoading(false);
 				});
 			})
 			.catch((error) => {
-				setError(error || 'An error occured. Please try again later');
+				setError('An error occured. Please try again later');
 				return setLoading(false);
 			});
 		}, []);
@@ -87,16 +94,16 @@ function IndexDeliveryRoutes(props) {
 					}
 
 					setError(null);
-					setRedirect(`/route/${data.id}`);
+					setRedirect(`/route/${data.data}`);
 					return setLoading(false);
 	
 				}).catch((error) => {
-					setError(error || 'An error occured. Please try again later');
+					setError('An error occured. Please try again later');
 					return setLoading(false);
 				});
 			})
 			.catch((error) => {
-				setError(error || 'An error occured. Please try again later');
+				setError('An error occured. Please try again later');
 				return setLoading(false);
 			});
 		}
@@ -123,12 +130,33 @@ function IndexDeliveryRoutes(props) {
 
 	const { user } = props;
 	const [ showCreateRouteModal, setShowCreateRouteModal ] = useState(false);
-	const [ routes, setRoutes ] = useState([{
-		id: 'asda214',
-		mapImage: 'https://miro.medium.com/max/4800/0*hGYjDjU-YL4ipJvI.',
-		packageCount: 4,
-		startTime: '30/07/2020 11:49'
-	}]);
+	const [ loading, setLoading ] = useState(true);
+	const [ routes, setRoutes ] = useState([]);
+
+	useEffect(() => {
+		setLoading(true);
+		fetch(`${process.env.REACT_APP_API_ENDPOINT}/routes`, {
+			headers: {
+				'Authorization': user.token
+			}
+		})
+		.then((response) => {
+			response.json().then(data => {
+				if (!data.success) {
+					return setLoading(false);
+				}
+
+				setRoutes(data.data);
+				return setLoading(false);
+
+			}).catch((error) => {
+				return setLoading(false);
+			});
+		})
+		.catch((error) => {
+			return setLoading(false);
+		});
+	}, []);
 
 	return (
 		<Container>
@@ -136,6 +164,7 @@ function IndexDeliveryRoutes(props) {
 			Manage and create routes here
 
 			{ showCreateRouteModal && <CreateRouteModal /> }
+			{ loading && <Dimmer active><Loader active>Loading</Loader></Dimmer>}
 			<Card.Group doubling itemsPerRow={4} style={{marginTop: '1rem'}}>
 				<Card link style={{padding: '1rem'}} onClick={() => setShowCreateRouteModal(true)}>
 					<Icon name="plus" size="huge" color="light grey" link style={{margin: 'auto'}} />
