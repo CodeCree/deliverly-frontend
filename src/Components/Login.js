@@ -43,11 +43,13 @@ function Login(props) {
 					return setLoading(false);
 	
 				}).catch((error) => {
+					console.error(error);
 					setError('An error occured. Please try again later');
 					setLoading(false);
 				});
 			})
 			.catch((error) => {
+				console.error(error);
 				setError('An error occured. Please try again later');
 				setLoading(false);
 			});
@@ -75,9 +77,9 @@ function Login(props) {
 				}
 
 				setUser({
-					'name': data.data.email,
-					'token': data.data.token,
-					'operator': data.data.operator
+					'name': data.email,
+					'token': data.token,
+					'operator': data.operator
 				});
 
 				sessionStorage.setItem('token', data.token);
