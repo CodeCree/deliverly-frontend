@@ -32,7 +32,7 @@ function PackageScanner() {
 	function handleScan(data) {
 		if (data) {
 			if (lastScan === data) return;
-			if (data.length !== 45 || !data.startsWith('deliverly')) return setError('Invalid QR code');
+			if (data.length !== 34 || !data.startsWith('de')) return setError('Invalid QR code');
 
 			//Check data
 
