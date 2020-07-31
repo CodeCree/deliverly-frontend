@@ -33,7 +33,7 @@ function Warehouses(props) {
 			.then((response) => {
 				response.json().then(data => {
 					if (!data.success) {
-						setError(error);
+						setError(data.error || data.message || 'An error occured. Please try again later');
 						return setLoading(false);
 					}
 
@@ -43,12 +43,12 @@ function Warehouses(props) {
 					return setLoading(false);
 	
 				}).catch((error) => {
-					setError(error);
+					setError(error || 'An error occured. Please try again later');
 					return setLoading(false);
 				});
 			})
 			.catch((error) => {
-				setError(error);
+				setError(error || 'An error occured. Please try again later');
 				return setLoading(false);
 			});
 		}
