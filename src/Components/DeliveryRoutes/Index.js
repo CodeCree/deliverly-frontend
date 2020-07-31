@@ -7,12 +7,20 @@ function IndexDeliveryRoutes(props) {
 		const { route } = props;
 	
 		return (
-			<Card link as={Link} to={`/route/${route.id}`}>
+			<Card link as={Link} to={`/route/${route._id}`}>
 				<Card.Content>
-					<Card.Header>{route.startedAt}</Card.Header>
+					<Card.Header>Route</Card.Header>
+					<Card.Meta>
+						<Icon name="box" />
+						<span className="number"><strong>Packages: </strong>{route.packages.length}</span>
+					</Card.Meta>
+					{route.startedAt && <Card.Meta>
+						<Icon name="clock" />
+						<span className="number"><strong>Started at: </strong>{route.startedAt}</span>
+					</Card.Meta> }
 					{ route.endedAt && <Card.Meta>
 						<Icon name="clock" />
-						<span className="number">{route.endedAt}</span>
+						<span className="number"><strong>Ended at: </strong>{route.endedAt}</span>
 					</Card.Meta> }
 				</Card.Content>
 			</Card>
@@ -137,7 +145,6 @@ function IndexDeliveryRoutes(props) {
 				if (!data.success) {
 					return setLoading(false);
 				}
-				console.log(data);
 
 				setRoutes(data.data);
 				return setLoading(false);

@@ -25,6 +25,10 @@ function App() {
 		setUser(null);
 	}
 
+	//<Route path="/routes/all" render={() => <AllRoutes user={user} />} />
+	//<Route path="/packages" render={() => <Packages user={user} />} />
+
+
 	if (!user) {
 		return (
 			<Router>
@@ -72,9 +76,7 @@ function App() {
 
 				{ user.operator && <>
 					<Route path="/users" render={() => <Users user={user} />} />
-					<Route path="/packages" render={() => <Packages user={user} />} />
 					<Route path="/warehouses" render={() => <Warehouses user={user} />} />
-					<Route path="/routes/all" render={() => <AllRoutes user={user} />} />
 				</> }
 
 				<Route>

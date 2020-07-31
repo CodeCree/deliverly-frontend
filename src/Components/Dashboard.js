@@ -6,6 +6,24 @@ import Map from './Map';
 function Dashboard(props) {
 	const { user } = props;
 
+	/*
+	<Card link as={Link} to="/routes/all">
+						<Card.Content>
+							<Icon name="map" size="huge" color="grey" style={{marginBottom: '1.5rem'}}/>
+							<Card.Header>All Routes</Card.Header>
+							<Card.Description>Manage routes</Card.Description>
+						</Card.Content>
+					</Card>
+
+					<Card link as={Link} to="/packages">
+						<Card.Content>
+							<Icon name="boxes" size="huge" color="grey" style={{marginBottom: '1.5rem'}}/>
+							<Card.Header>Packages</Card.Header>
+							<Card.Description>Manage packages</Card.Description>
+						</Card.Content>
+					</Card>
+					*/
+
 	return (
 		<Container>
 			<Header as="h1">Welcome to Deliverly, {user.firstName} </Header>
@@ -41,22 +59,6 @@ function Dashboard(props) {
 							<Icon name="user" size="huge" color="grey" style={{marginBottom: '1.5rem'}}/>
 							<Card.Header>Account</Card.Header>
 							<Card.Description>Manage your account</Card.Description>
-						</Card.Content>
-					</Card>
-
-					<Card link as={Link} to="/routes/all">
-						<Card.Content>
-							<Icon name="map" size="huge" color="grey" style={{marginBottom: '1.5rem'}}/>
-							<Card.Header>All Routes</Card.Header>
-							<Card.Description>Manage routes</Card.Description>
-						</Card.Content>
-					</Card>
-
-					<Card link as={Link} to="/packages">
-						<Card.Content>
-							<Icon name="boxes" size="huge" color="grey" style={{marginBottom: '1.5rem'}}/>
-							<Card.Header>Packages</Card.Header>
-							<Card.Description>Manage packages</Card.Description>
 						</Card.Content>
 					</Card>
 
