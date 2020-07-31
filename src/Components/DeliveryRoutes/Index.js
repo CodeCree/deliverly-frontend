@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Header, Card, Icon, Image, Modal, Form, Dropdown, Message, Button } from 'semantic-ui-react';
+import { Container, Header, Card, Icon, Modal, Form, Dropdown, Message, Button, Dimmer, Loader } from 'semantic-ui-react';
 import { Link, Redirect } from 'react-router-dom';
 
 function IndexDeliveryRoutes(props) {
@@ -8,13 +8,12 @@ function IndexDeliveryRoutes(props) {
 	
 		return (
 			<Card link as={Link} to={`/route/${route.id}`}>
-				<Image src={route.mapImage} alt="An image of the map of the route" />
 				<Card.Content>
-					<Card.Header>{route.startTime}</Card.Header>
-					<Card.Meta>
-						<Icon name="box" />
-						<span className="number">{route.packageCount} packages</span>
-					</Card.Meta>
+					<Card.Header>{route.startedAt}</Card.Header>
+					{ route.endedAt && <Card.Meta>
+						<Icon name="clock" />
+						<span className="number">{route.endedAt}</span>
+					</Card.Meta> }
 				</Card.Content>
 			</Card>
 		);
@@ -53,12 +52,12 @@ function IndexDeliveryRoutes(props) {
 					return setLoading(false);
 	
 				}).catch((error) => {
-					setError(error || 'An error occured. Please try again later');
+					setError('An error occured. Please try again later');
 					return setLoading(false);
 				});
 			})
 			.catch((error) => {
-				setError(error || 'An error occured. Please try again later');
+				setError('An error occured. Please try again later');
 				return setLoading(false);
 			});
 		}, []);
@@ -81,23 +80,22 @@ function IndexDeliveryRoutes(props) {
 			})
 			.then((response) => {
 				response.json().then(data => {
-					console.log(data);
 					if (!data.success) {
 						setError(data.error || 'An error occured. Please try again later');
 						return setLoading(false);
 					}
 
 					setError(null);
-					setRedirect(`/route/${data.id}`);
+					setRedirect(`/route/${data.data}`);
 					return setLoading(false);
 	
 				}).catch((error) => {
-					setError(error || 'An error occured. Please try again later');
+					setError('An error occured. Please try again later');
 					return setLoading(false);
 				});
 			})
 			.catch((error) => {
-				setError(error || 'An error occured. Please try again later');
+				setError('An error occured. Please try again later');
 				return setLoading(false);
 			});
 		}
@@ -124,12 +122,34 @@ function IndexDeliveryRoutes(props) {
 
 	const { user } = props;
 	const [ showCreateRouteModal, setShowCreateRouteModal ] = useState(false);
-	const [ routes, setRoutes ] = useState([{
-		id: 'asda214',
-		mapImage: 'https://miro.medium.com/max/4800/0*hGYjDjU-YL4ipJvI.',
-		packageCount: 4,
-		startTime: '30/07/2020 11:49'
-	}]);
+	const [ loading, setLoading ] = useState(true);
+	const [ routes, setRoutes ] = useState([]);
+
+	useEffect(() => {
+		setLoading(true);
+		fetch(`${process.env.REACT_APP_API_ENDPOINT}/routes`, {
+			headers: {
+				'Authorization': user.token
+			}
+		})
+		.then((response) => {
+			response.json().then(data => {
+				if (!data.success) {
+					return setLoading(false);
+				}
+				console.log(data);
+
+				setRoutes(data.data);
+				return setLoading(false);
+
+			}).catch((error) => {
+				return setLoading(false);
+			});
+		})
+		.catch((error) => {
+			return setLoading(false);
+		});
+	}, []);
 
 	return (
 		<Container>
@@ -137,6 +157,7 @@ function IndexDeliveryRoutes(props) {
 			Manage and create routes here
 
 			{ showCreateRouteModal && <CreateRouteModal /> }
+			{ loading && <Dimmer active><Loader active>Loading</Loader></Dimmer>}
 			<Card.Group doubling itemsPerRow={4} style={{marginTop: '1rem'}}>
 				<Card link style={{padding: '1rem'}} onClick={() => setShowCreateRouteModal(true)}>
 					<Icon name="plus" size="huge" color="light grey" link style={{margin: 'auto'}} />

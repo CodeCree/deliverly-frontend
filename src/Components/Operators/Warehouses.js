@@ -110,7 +110,6 @@ function Warehouses(props) {
 			setTown(warehouse.address.town);
 			setPostcode(warehouse.address.postcode);
 			setMapItems([{ position: warehouse.address.location }]);
-			console.log(warehouse.address.location);
 		}, [id]);
 	
 		function updateWarehouse() {
