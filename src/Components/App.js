@@ -65,12 +65,12 @@ function App() {
 			</Menu>
 
 			<Switch>
-				<Route path="/" exact component={Dashboard} />
+				<Route path="/" exact render={() => <Dashboard user={user} />} />
 				<Route path="/account" exact component={Account} />
 				<Route path="/route/:id" component={ShowDeliveryRoute} />
 				<Route path="/routes" component={IndexDeliveryRoutes} />
 				<Route path="/packages/scan" component={PackageScanner} />
-				<Route path="/qr-codes" component={QrCodeGenerator} />
+				<Route path="/qr-codes" render={() => <QrCodeGenerator user={user} />} />
 
 				<Route path="/users" component={Users} />
 				<Route path="/packages" component={Packages} />

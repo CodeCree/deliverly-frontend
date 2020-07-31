@@ -3,22 +3,40 @@ import { Container, Loader, Header, Segment, Button } from 'semantic-ui-react';
 import QRCode from 'qrcode';
 import jsPdf from 'jspdf';
 
-function QrCodeSheet() {
+function QrCodeSheet(props) {
+	const { user } = props;
 	const [loading, setLoading] = useState(false);
 
 	async function generateCodes() {
 		setLoading(true);
 
-		async function fetchStrings() {
-			//Take from backend
-			let strings = [];
-			
-			for (let i = 0; i < 16; i++) {
-				let random = Math.round(Math.random()*100000000000).toLocaleString('fullwide', {useGrouping:false, minimumIntegerDigits:12}) + Math.round(Math.random()*100000000000).toLocaleString('fullwide', {useGrouping:false, minimumIntegerDigits:12}) + Math.round(Math.random()*100000000000).toLocaleString('fullwide', {useGrouping:false, minimumIntegerDigits:12});
-
-				strings.push('deliverly' + random);
-			}
-			return strings;
+		async function fetchStrings() {			
+			return new Promise((resolve, reject) => {
+				fetch(`${process.env.REACT_APP_API_ENDPOINT}/qr-code`, {
+					method: 'GET',
+					headers: {
+						'Authorization': user.token
+					}
+				})
+				.then((response) => {
+					response.json().then(data => {
+						if (!data.success) {
+							resolve('');
+						}
+	
+						console.log(data);
+						resolve(data.data);
+		
+					}).catch((error) => {
+						console.error(error);
+						resolve('');
+					});
+				})
+				.catch((error) => {
+					console.error(error);
+					resolve('');
+				});
+			})
 		}
 		async function generateQrCode(str) {
 			try {
@@ -80,10 +98,11 @@ function QrCodeSheet() {
 	);
 }
 
-function QrCodeGenerator() {
+function QrCodeGenerator(props) {
+	const { user } = props;
 	return (
 		<Container>
-			<QrCodeSheet />
+			<QrCodeSheet user={user} />
 		</Container>
 	);
 }

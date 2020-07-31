@@ -5,7 +5,7 @@ function Login(props) {
 	const { setUser } = props;
 	const [ error, setError ] = useState(null);
 	const [ loading, setLoading ] = useState(false);
-	const [ email, setEmail ] = useState('test@example.com');
+	const [ email, setEmail ] = useState('test@codecree.co.uk');
 	const [ password, setPassword ] = useState('password');
 	const [ remember, setRemember ] = useState(false);
 
@@ -16,29 +16,86 @@ function Login(props) {
 		if (token) {
 			setLoading(true);
 
-			//Login
-			setUser({
-				'name': 'Bob',
-				'token': token,
-				'operator': false
-			});
+			fetch(`${process.env.REACT_APP_API_ENDPOINT}/user/me`, {
+				method: 'GET',
+				headers: {
+					'Authorization': token
+				}
+			})
+			.then((response) => {
+				response.json().then(data => {
+					if (!data.success) {
+						setError(data.error || 'An error occured. Please try again later');
 
-			setLoading(false);
+						sessionStorage.removeItem('token');
+						localStorage.removeItem('token');
+
+						return setLoading(false);
+					}
+
+					setUser({
+						'name': data.data.email,
+						'token': token,
+						'operator': data.data.operator
+					});
+
+					setError(null);
+					return setLoading(false);
+	
+				}).catch((error) => {
+					setError('An error occured. Please try again later');
+					setLoading(false);
+				});
+			})
+			.catch((error) => {
+				setError('An error occured. Please try again later');
+				setLoading(false);
+			});
 		}
 		
 	}, []);
 
 	function attemptLogin() {
-		let token = 'abc';
+		setLoading(true);
+		fetch(`${process.env.REACT_APP_API_ENDPOINT}/user/login`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				email: email,
+				password: password
+			})
+		})
+		.then((response) => {
+			response.json().then(data => {
+				if (!data.success) {
+					setError(data.error || 'An error occured. Please try again later');
+					return setLoading(false);
+				}
 
-		setUser({
-			'name': 'Bob',
-			'token': token,
-			'operator': false
-		});
+				setUser({
+					'name': data.data.email,
+					'token': data.data.token,
+					'operator': data.data.operator
+				});
 
-		sessionStorage.setItem('token', token);
-		if (remember) localStorage.setItem('token', token);
+				sessionStorage.setItem('token', data.token);
+				if (remember) localStorage.setItem('token', data.token);
+
+				setError(null);
+				return setLoading(false);
+
+			}).catch((error) => {
+				setError('An error occured. Please try again later');
+				setLoading(false);
+			});
+		})
+		.catch((error) => {
+			setError('An error occured. Please try again later');
+			setLoading(false);
+		})
+
 	}
 
 	return (
