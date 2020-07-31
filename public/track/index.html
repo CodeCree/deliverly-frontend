@@ -43,7 +43,7 @@
 
 					<div class="field" id="tracking-code-field">
 						<label>Tracking Code</label>
-						<input type="text" name="tracking-code" id="tracking-code" placeholder="Tracking Code" required value="wood-citrus-art">
+						<input type="text" name="tracking-code" id="tracking-code" placeholder="Tracking Code" required>
 					</div>
 
 					<button type="submit" class="ui fluid large olive submit button">Track</button>
@@ -58,7 +58,9 @@
 			<div class="ui stacked segment">
 				<h2>Details</h2>
 				<ul>
-					<li><strong>Sent at </strong><span id="package-sent-at"></span></li>
+					<!--<li><strong>Sent at </strong><span id="package-sent-at"></span></li>-->
+					<li><strong>Recipient </strong><span id="package-recipient"></span></li>
+					<li><strong>Email </strong><span id="package-email"></span></li>
 					<li><strong>Weight </strong><span id="package-weight"></span>kg</li>
 					<li><strong>Address </strong><span id="package-address"></span></li>
 				</ul>
@@ -73,41 +75,36 @@
 		</div>
 
 		<script>
-			function getPackage(trackingCode) {
-				if (trackingCode === 'wood-citrus-art') return {
-					id: 'wood-citrus-art',
-					weight: 1.00,
-					sentAt: '27/07/2020 22:15',
-					deliveredAt: null,
-					address: '1 John Street, London, LO1 100',
+			async function getPackage(trackingCode) {
+				return new Promise((resolve, reject) => {
+					fetch(`https://staging.codecree.co.uk/api/package/${trackingCode}`)
+					.then((response) => {
+						response.json().then(data => {
+							if (!data.success) {
+								return resolve(null);
+							}
 
-					history: [
-						{
-							title: 'Sent',
-							type: 'sent',
-							at: '27/07/2020 22:15'
-						},
-						{
-							title: 'On transit to warehouse #1',
-							type: 'transit',
-							at: '30/07/2020 05:00'
-						},
-						{
-							title: 'Arrived at warehouse #1',
-							type: 'warehouse',
-							at: '30/07/2020 22:15'
-						}
-					]
-				}
+							return resolve(data.data);
+			
+						}).catch((error) => {
+							return resolve(null);
+						});
+					})
+					.catch((error) => {
+						return resolve(null);
+					});
+				});
 			}
 
 			function populatePackage(package) {
-				$('#package-id').text(package.id);
+				$('#package-id').text(package.code);
 				$('#package-weight').text(package.weight);
-				$('#package-sent-at').text(package.sentAt);
-				$('#package-address').text(package.address);
+				$('#package-recipient').text(package.recipient);
+				$('#package-email').text(package.email);
+				//$('#package-sent-at').text(package.sentAt);
+				$('#package-address').text(`${package.address.street}, ${package.address.city}, ${package.address.postcode}`);
 
-				for (let event of package.history) {
+				for (let event of package.events) {
 					let iconName = 'box';
 					switch (event.type) {
 						case 'sent':
@@ -139,7 +136,7 @@
 				}
 			}
 
-			function submitTrackingCode() {
+			async function submitTrackingCode() {
 				$('#tracking-code-form').addClass('loading');
 				$('#tracking-code-form').removeClass('error');
 				$('#tracking-code-field').removeClass('error');
@@ -147,7 +144,8 @@
 				let code = $('#tracking-code').val();
 
 				if (code && code.length > 0) {
-					let package = getPackage(code);
+					let package = await getPackage(code);
+					console.log(package);
 
 					if (package) {
 						$('#tracking-code-form').removeClass('loading');
