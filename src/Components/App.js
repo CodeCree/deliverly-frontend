@@ -23,8 +23,6 @@ function App() {
 		sessionStorage.removeItem('token');
 		localStorage.removeItem('token');
 		setUser(null);
-
-		//
 	}
 
 	if (!user) {
@@ -72,10 +70,12 @@ function App() {
 				<Route path="/packages/scan" render={() => <PackageScanner user={user} />} />
 				<Route path="/qr-codes" render={() => <QrCodeGenerator user={user} />} />
 
-				<Route path="/users" render={() => <Users user={user} />} />
-				<Route path="/packages" render={() => <Packages user={user} />} />
-				<Route path="/warehouses" render={() => <Warehouses user={user} />} />
-				<Route path="/routes/all" render={() => <AllRoutes user={user} />} />
+				{ user.operator && <>
+					<Route path="/users" render={() => <Users user={user} />} />
+					<Route path="/packages" render={() => <Packages user={user} />} />
+					<Route path="/warehouses" render={() => <Warehouses user={user} />} />
+					<Route path="/routes/all" render={() => <AllRoutes user={user} />} />
+				</> }
 
 				<Route>
 					<Redirect to="/" />

@@ -104,6 +104,7 @@ function Users(props) {
 		const [ password, setPassword ] = useState('');
 		const [ operator, setOperator ] = useState(false);
 		const [ name, setName ] = useState('');
+		const [ self, setSelf ] = useState(false);
 
 		useEffect(() => {
 			const user = users.find(user => user.id === id);
@@ -114,6 +115,7 @@ function Users(props) {
 			setName(`${user.firstName} ${user.lastName}`);
 			setEmail(user.email);
 			setOperator(user.operator);
+			setSelf(user.id === props.user.id);
 		}, [id]);
 	
 		function updateUser() {
@@ -128,7 +130,7 @@ function Users(props) {
 					lastName: lastName,
 					email: email,
 					password: password || undefined,
-					operator: operator
+					operator: self || operator
 				})
 			})
 			.then((response) => {
@@ -157,7 +159,7 @@ function Users(props) {
 		return (
 			<Modal open={true} onClose={() => setRedirect('/users')}>
 				{ redirect && <Redirect to={redirect} /> }
-				<Modal.Header>Update {name}</Modal.Header>
+				<Modal.Header>Update {name} {self && '(me)'}</Modal.Header>
 				<Modal.Content>
 					<Form onSubmit={updateUser} loading={loading}>
 						{ error && <Message negative>{error}</Message> }
@@ -184,7 +186,7 @@ function Users(props) {
 							</Form.Field>
 						</Form.Group>
 
-						<Form.Checkbox inline label='Operator' checked={operator} onChange={(e, state) => setOperator(state.checked)} />
+						{ !self && <Form.Checkbox inline label='Operator' checked={operator} onChange={(e, state) => setOperator(state.checked)} /> }
 	
 						<Button type="submit">Update</Button>
 					</Form>
@@ -195,16 +197,16 @@ function Users(props) {
 	
 	
 	function UserCard(props) {
-		const { user } = props;
+		const { user, self } = props;
 		return (
-			<Card link as={Link} to={`/users/${user.id}`} color={user.operator && 'teal'}>
+			<Card link as={Link} to={`/users/${user.id}`} color={self ? 'orange' : user.operator && 'teal'}>
 				<Card.Content>
 					<Card.Header>{user.firstName} {user.lastName}</Card.Header>
 					<Card.Meta>
 						<Icon name="letter" />
 						{user.email}
 					</Card.Meta>
-					{ user.operator && <Card.Description>Operator</Card.Description> }
+					{ user.operator && <Card.Description>{self ? 'Me' : 'Operator'}</Card.Description> }
 				</Card.Content>
 			</Card>
 		);
@@ -251,7 +253,7 @@ function Users(props) {
 							<Icon name="plus" size="huge" color="grey" link style={{margin: 'auto'}} />
 						</Card>
 
-						{ users.map(user => <UserCard key={user.id} user={user} />)}
+						{ users.map(user => <UserCard key={user.id} user={user} self={user.id === props.user.id} />)}
 					</Card.Group>
 
 					<Switch>

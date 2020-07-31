@@ -98,7 +98,8 @@ function Warehouses(props) {
 		const [ name, setName ] = useState();
 		const [ street, setStreet ] = useState();
 		const [ town, setTown ] = useState();
-		const [ postcode, setPostcode ] = useState('');
+		const [ postcode, setPostcode ] = useState();
+		const [ mapItems, setMapItems ] = useState([]);
 
 		useEffect(() => {
 			const warehouse = warehouses.find(warehouse => warehouse.id === id);
@@ -108,6 +109,8 @@ function Warehouses(props) {
 			setStreet(warehouse.address.street);
 			setTown(warehouse.address.town);
 			setPostcode(warehouse.address.postcode);
+			setMapItems([{ position: warehouse.address.location }]);
+			console.log(warehouse.address.location);
 		}, [id]);
 	
 		function updateWarehouse() {
@@ -175,6 +178,8 @@ function Warehouses(props) {
 								<Input fluid placeholder="Postcode" required value={postcode} onChange={(e, state) => setPostcode(state.value)} />
 							</Form.Field>
 						</Form.Group>
+
+						<Map items={mapItems} />
 	
 						<Button type="submit">Update</Button>
 					</Form>
@@ -203,22 +208,17 @@ function Warehouses(props) {
 	}
 
 	const { user } = props;
+	const { token } = user;
 	const { path } = useRouteMatch();
 	const [ loading, setLoading ] = useState(true);
 
 	const [ warehouses, setWarehouses ] = useState([]);
-	const [ mapItems, setMapItems ] = useState([{
-		position: [53.7389, -0.33240]
-	}, {
-		position: [53.788926, -0.425788]
-	}, {
-		position: [53.840070, -0.436073]
-	}]);
+	const [ mapItems, setMapItems ] = useState([]);
 
 	useEffect(() => {
 		fetch(`${process.env.REACT_APP_API_ENDPOINT}/warehouses`, {
 			headers: {
-				'Authorization': user.token
+				'Authorization': token
 			}
 		})
 		.then((response) => {
@@ -237,7 +237,15 @@ function Warehouses(props) {
 		.catch((error) => {
 			return setLoading(false);
 		});
-	}, []);
+	}, [token]);
+
+	useEffect(() => {
+		setMapItems(warehouses.map(warehouse => {
+			return {
+				position: warehouse.address.location
+			}
+		}))
+	}, [warehouses]);
 
 	return (
 		<Container>

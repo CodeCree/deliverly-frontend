@@ -34,6 +34,7 @@ function Login(props) {
 					}
 
 					setUser({
+						id: data.data.id,
 						firstName: data.data.firstName,
 						lastName: data.data.lastName,
 						email: data.data.email,
@@ -79,15 +80,16 @@ function Login(props) {
 				}
 
 				setUser({
-					firstName: data.firstName,
-					lastName: data.lastName,
-					email: data.email,
-					token: data.token,
-					operator: data.operator
+					id: data.data.id,
+					firstName: data.data.firstName,
+					lastName: data.data.lastName,
+					email: data.data.email,
+					token: data.data.token,
+					operator: data.data.operator
 				});
 
-				sessionStorage.setItem('token', data.token);
-				if (remember) localStorage.setItem('token', data.token);
+				sessionStorage.setItem('token', data.data.token);
+				if (remember) localStorage.setItem('token', data.data.token);
 
 				setError(null);
 				return setLoading(false);
