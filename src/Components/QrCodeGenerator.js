@@ -66,7 +66,6 @@ function QrCodeSheet(props) {
 			if (i > 4) xpos = 76;
 			if (i > 9) xpos = 138;
 
-			console.log(strings[i].length);
 			doc.addImage(await generateQrCode(strings[i]), 'PNG', xpos, ypos, 55, 55)
 		}
 

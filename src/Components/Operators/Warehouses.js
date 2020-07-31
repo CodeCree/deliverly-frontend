@@ -3,9 +3,10 @@ import { Container, Header, Card, Icon, Image, Modal, Form, Button, Input, Messa
 import { Link, Redirect, useRouteMatch, Switch, Route, useParams } from 'react-router-dom';
 import Map from '../Map';
 
-function Warehouses() {
-	function CreateWarehouse(props) {
+function Warehouses(props) {
+	function CreateWarehouse() {
 		const [ redirect, setRedirect ] = useState(false);
+		const [ loading, setLoading ] = useState(false);
 		const [ error, setError ] = useState(null);
 	
 		const [ name, setName ] = useState('');
@@ -14,7 +15,42 @@ function Warehouses() {
 		const [ postcode, setPostcode ] = useState('');
 	
 		function createWarehouse() {
-			setError('Invalid');
+			fetch(`${process.env.REACT_APP_API_ENDPOINT}/warehouse`, {
+				method: 'POST',
+				headers: {
+					'Authorization': user.token,
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					name: name,
+					address: {
+						street: street,
+						city: town,
+						postcode: postcode
+					}
+				})
+			})
+			.then((response) => {
+				response.json().then(data => {
+					if (!data.success) {
+						setError(error);
+						return setLoading(false);
+					}
+
+					setError(null);
+					setWarehouses(data.data);
+					setRedirect(`/warehouses/${data.id}`);
+					return setLoading(false);
+	
+				}).catch((error) => {
+					setError(error);
+					return setLoading(false);
+				});
+			})
+			.catch((error) => {
+				setError(error);
+				return setLoading(false);
+			});
 		}
 	
 		return (
@@ -22,8 +58,9 @@ function Warehouses() {
 				{ redirect && <Redirect to={redirect} /> }
 				<Modal.Header>Create Warehouse</Modal.Header>
 				<Modal.Content>
-					{ error && <Message negative>{error}</Message> }
-					<Form onSubmit={createWarehouse}>
+					<Form onSubmit={createWarehouse} loading={loading}>
+						{ error && <Message negative>{error}</Message> }
+
 						<Form.Field required>
 							<label>Name</label>
 							<Input fluid placeholder="Name" required value={name} onChange={(e, state) => setName(state.value)} />
@@ -55,6 +92,7 @@ function Warehouses() {
 		const { id } = useParams();
 
 		const [ redirect, setRedirect ] = useState(false);
+		const [ loading, setLoading ] = useState(false);
 		const [ error, setError ] = useState(null);
 
 		const [ name, setName ] = useState();
@@ -73,7 +111,42 @@ function Warehouses() {
 		}, [id]);
 	
 		function updateWarehouse() {
-			setError('Invalid');
+			fetch(`${process.env.REACT_APP_API_ENDPOINT}/warehouse`, {
+				method: 'POST',
+				headers: {
+					'Authorization': user.token,
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					name: name,
+					address: {
+						street: street,
+						city: town,
+						postcode: postcode
+					}
+				})
+			})
+			.then((response) => {
+				response.json().then(data => {
+					if (!data.success) {
+						setError(error);
+						return setLoading(false);
+					}
+
+					setError(null);
+					setWarehouses(data.data);
+					setRedirect(`/warehouses/${data.id}`);
+					return setLoading(false);
+	
+				}).catch((error) => {
+					setError(error);
+					return setLoading(false);
+				});
+			})
+			.catch((error) => {
+				setError(error);
+				return setLoading(false);
+			});
 		}
 	
 		return (
@@ -81,8 +154,8 @@ function Warehouses() {
 				{ redirect && <Redirect to={redirect} /> }
 				<Modal.Header>Update {name}</Modal.Header>
 				<Modal.Content>
-					{ error && <Message negative>{error}</Message> }
-					<Form onSubmit={updateWarehouse}>
+					<Form onSubmit={updateWarehouse} loading={loading}>
+						{ error && <Message negative>{error}</Message> }
 						<Form.Field required>
 							<label>Name</label>
 							<Input fluid placeholder="Name" required value={name} onChange={(e, state) => setName(state.value)} />
@@ -115,7 +188,6 @@ function Warehouses() {
 		const { warehouse } = props;
 		return (
 			<Card link as={Link} to={`/warehouses/${warehouse.id}`}>
-				<Image src={warehouse.image} alt="An image of the warehouse" />
 				<Card.Content>
 					<Card.Header>{warehouse.name}</Card.Header>
 					<Card.Meta>
@@ -127,12 +199,12 @@ function Warehouses() {
 		);
 	}
 
+	const { user } = props;
 	const { path } = useRouteMatch();
 
 	const [ warehouses, setWarehouses ] = useState([{
 		id: 'asda214',
 		name: 'Warehouse 1',
-		image: 'https://cdn.pixabay.com/photo/2015/07/08/03/13/forklift-835340_960_720.jpg',
 		packageCount: 23,
 		address: {
 			street: 'ABC',
