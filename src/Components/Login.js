@@ -25,7 +25,7 @@ function Login(props) {
 			.then((response) => {
 				response.json().then(data => {
 					if (!data.success) {
-						setError(data.error || 'An error occured. Please try again later');
+						setError(data.message || data.error || 'An error occured. Please try again later');
 
 						sessionStorage.removeItem('token');
 						localStorage.removeItem('token');
@@ -72,7 +72,7 @@ function Login(props) {
 		.then((response) => {
 			response.json().then(data => {
 				if (!data.success) {
-					setError(data.error || 'An error occured. Please try again later');
+					setError(data.message || data.error || 'An error occured. Please try again later');
 					return setLoading(false);
 				}
 

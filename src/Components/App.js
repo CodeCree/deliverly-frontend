@@ -66,16 +66,16 @@ function App() {
 
 			<Switch>
 				<Route path="/" exact render={() => <Dashboard user={user} />} />
-				<Route path="/account" exact component={Account} />
-				<Route path="/route/:id" component={ShowDeliveryRoute} />
-				<Route path="/routes" component={IndexDeliveryRoutes} />
-				<Route path="/packages/scan" component={PackageScanner} />
+				<Route path="/account" render={() => <Account user={user} />} />
+				<Route path="/route/:id" render={() => <ShowDeliveryRoute user={user} />} />
+				<Route path="/routes" render={() => <IndexDeliveryRoutes user={user} />} />
+				<Route path="/packages/scan" render={() => <PackageScanner user={user} />} />
 				<Route path="/qr-codes" render={() => <QrCodeGenerator user={user} />} />
 
-				<Route path="/users" component={Users} />
-				<Route path="/packages" component={Packages} />
-				<Route path="/warehouses" component={Warehouses} />
-				<Route path="/routes/all" component={AllRoutes} />
+				<Route path="/users" render={() => <Users user={user} />} />
+				<Route path="/packages" render={() => <Packages user={user} />} />
+				<Route path="/warehouses" render={() => <Warehouses user={user} />} />
+				<Route path="/routes/all" render={() => <AllRoutes user={user} />} />
 
 				<Route>
 					<Redirect to="/" />

@@ -31,7 +31,7 @@ function Map(props) {
 			new mapboxgl.Marker()
 			.setLngLat([item.position[1], item.position[0]])
 			.addTo(map);
-			console.log([item.position[1], item.position[0]]);
+			//console.log([item.position[1], item.position[0]]);
 
 			if (item.position[1] < minPosition[0]) minPosition[0] = item.position[1];
 			else if (item.position[1] > maxPosition[0]) maxPosition[0] = item.position[1];
