@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Header, Card, Icon, Image, Modal, Form, Button, Input, Message } from 'semantic-ui-react';
+import { Container, Header, Card, Icon, Modal, Form, Button, Input, Message, Loader } from 'semantic-ui-react';
 import { Link, Redirect, useRouteMatch, Switch, Route, useParams } from 'react-router-dom';
 import Map from '../Map';
 
 function Warehouses(props) {
 	function CreateWarehouse() {
-		const [ redirect, setRedirect ] = useState(false);
+		const [ redirect, setRedirect ] = useState(null);
 		const [ loading, setLoading ] = useState(false);
 		const [ error, setError ] = useState(null);
 	
@@ -32,23 +32,24 @@ function Warehouses(props) {
 			})
 			.then((response) => {
 				response.json().then(data => {
+					console.log(data);
 					if (!data.success) {
 						setError(data.error || data.message || 'An error occured. Please try again later');
 						return setLoading(false);
 					}
 
 					setError(null);
+					setRedirect('/warehouses');
 					setWarehouses(data.data);
-					setRedirect(`/warehouses/${data.id}`);
 					return setLoading(false);
 	
 				}).catch((error) => {
-					setError(error || 'An error occured. Please try again later');
+					setError('An error occured. Please try again later');
 					return setLoading(false);
 				});
 			})
 			.catch((error) => {
-				setError(error || 'An error occured. Please try again later');
+				setError('An error occured. Please try again later');
 				return setLoading(false);
 			});
 		}
@@ -95,24 +96,26 @@ function Warehouses(props) {
 		const [ loading, setLoading ] = useState(false);
 		const [ error, setError ] = useState(null);
 
+		const [ uuid, setUuid ] = useState(null);
 		const [ name, setName ] = useState();
 		const [ street, setStreet ] = useState();
 		const [ town, setTown ] = useState();
 		const [ postcode, setPostcode ] = useState('');
 
 		useEffect(() => {
-			const warehouse = warehouses.find(warehouse => warehouse.id === id);
-			if (!warehouse) setRedirect("/warehouses");
+			const warehouse = warehouses.find(warehouse => warehouse.uuid === id);
+			if (!warehouse) return setRedirect("/warehouses");
 
 			setName(warehouse.name);
 			setStreet(warehouse.address.street);
-			setTown(warehouse.address.town);
+			setTown(warehouse.address.city);
 			setPostcode(warehouse.address.postcode);
+			setUuid(warehouse.uuid);
 		}, [id]);
 	
 		function updateWarehouse() {
-			fetch(`${process.env.REACT_APP_API_ENDPOINT}/warehouse`, {
-				method: 'POST',
+			fetch(`${process.env.REACT_APP_API_ENDPOINT}/warehouse/${uuid}`, {
+				method: 'PUT',
 				headers: {
 					'Authorization': user.token,
 					'Content-Type': 'application/json'
@@ -129,7 +132,7 @@ function Warehouses(props) {
 			.then((response) => {
 				response.json().then(data => {
 					if (!data.success) {
-						setError(error);
+						setError(data.error || data.message || 'An error occured. Please try again later');
 						return setLoading(false);
 					}
 
@@ -139,12 +142,12 @@ function Warehouses(props) {
 					return setLoading(false);
 	
 				}).catch((error) => {
-					setError(error);
+					setError('An error occured. Please try again later');
 					return setLoading(false);
 				});
 			})
 			.catch((error) => {
-				setError(error);
+				setError('An error occured. Please try again later');
 				return setLoading(false);
 			});
 		}
@@ -187,13 +190,16 @@ function Warehouses(props) {
 	function WarehouseCard(props) {
 		const { warehouse } = props;
 		return (
-			<Card link as={Link} to={`/warehouses/${warehouse.id}`}>
+			<Card link as={Link} to={`/warehouses/${warehouse.uuid}`}>
 				<Card.Content>
 					<Card.Header>{warehouse.name}</Card.Header>
-					<Card.Meta>
-						<Icon name="box" />
-						<span className="number">{warehouse.packageCount} packages</span>
-					</Card.Meta>
+					<Card.Description>
+						<p>
+							{warehouse.address.street}
+							<br />{warehouse.address.city}
+							<br />{warehouse.address.postcode}
+						</p>
+					</Card.Description>
 				</Card.Content>
 			</Card>
 		);
@@ -201,18 +207,9 @@ function Warehouses(props) {
 
 	const { user } = props;
 	const { path } = useRouteMatch();
+	const [ loading, setLoading ] = useState(true);
 
-	const [ warehouses, setWarehouses ] = useState([{
-		id: 'asda214',
-		name: 'Warehouse 1',
-		packageCount: 23,
-		address: {
-			street: 'ABC',
-			town: 'CBD',
-			postcode: 'L00 000',
-			location: [53.7389, -0.33240]
-		}
-	}]);
+	const [ warehouses, setWarehouses ] = useState([]);
 	const [ mapItems, setMapItems ] = useState([{
 		position: [53.7389, -0.33240]
 	}, {
@@ -221,25 +218,55 @@ function Warehouses(props) {
 		position: [53.840070, -0.436073]
 	}]);
 
+	useEffect(() => {
+		fetch(`${process.env.REACT_APP_API_ENDPOINT}/warehouses`, {
+			headers: {
+				'Authorization': user.token
+			}
+		})
+		.then((response) => {
+			response.json().then(data => {
+				if (!data.success) {
+					return setLoading(false);
+				}
+
+				setWarehouses(data.data);
+				return setLoading(false);
+
+			}).catch((error) => {
+				return setLoading(false);
+			});
+		})
+		.catch((error) => {
+			return setLoading(false);
+		});
+	}, []);
+
 	return (
 		<Container>
 			<Header as="h1">Warehouses</Header>
 			Manage warehouses
 
-			<Card.Group doubling itemsPerRow={4} style={{marginTop: '1rem'}}>
-				<Card link as={Link} to="/warehouses/new" style={{padding: '1rem'}}>
-					<Icon name="plus" size="huge" color="light grey" link style={{margin: 'auto'}} />
-				</Card>
+			{ loading ? <Loader active /> :
+				<>
+					<Card.Group doubling itemsPerRow={4} style={{marginTop: '1rem'}}>
+						<Card link as={Link} to="/warehouses/new" style={{padding: '1rem'}}>
+							<Icon name="plus" size="huge" color="grey" link style={{margin: 'auto'}} />
+						</Card>
 
-				{ warehouses.map(warehouse => <WarehouseCard key={warehouse.id} warehouse={warehouse} />)}
-			</Card.Group>
+						{ warehouses.map(warehouse => <WarehouseCard key={warehouse.id} warehouse={warehouse} />)}
+					</Card.Group>
 
-			<Switch>
-				<Route path={`${path}/new`} component={CreateWarehouse} />
-				<Route path={`${path}/:id`} component={WarehouseModal} />
-			</Switch>
+					<Switch>
+						<Route path={`${path}/new`} component={CreateWarehouse} />
+						<Route path={`${path}/:id`} component={WarehouseModal} />
+					</Switch>
 
-			<Map items={mapItems} />
+					<Map items={mapItems} />
+				</>
+			}
+
+			
 			 
 		</Container>
 	);
