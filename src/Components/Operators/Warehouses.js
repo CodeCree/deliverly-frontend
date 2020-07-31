@@ -264,10 +264,7 @@ function Warehouses(props) {
 
 					<Map items={mapItems} />
 				</>
-			}
-
-			
-			 
+			}	 
 		</Container>
 	);
 }
