@@ -32,9 +32,8 @@ function Warehouses(props) {
 			})
 			.then((response) => {
 				response.json().then(data => {
-					console.log(data);
 					if (!data.success) {
-						setError(data.error || data.message || 'An error occured. Please try again later');
+						setError(data.error || 'An error occured. Please try again later');
 						return setLoading(false);
 					}
 
@@ -96,25 +95,23 @@ function Warehouses(props) {
 		const [ loading, setLoading ] = useState(false);
 		const [ error, setError ] = useState(null);
 
-		const [ uuid, setUuid ] = useState(null);
 		const [ name, setName ] = useState();
 		const [ street, setStreet ] = useState();
 		const [ town, setTown ] = useState();
 		const [ postcode, setPostcode ] = useState('');
 
 		useEffect(() => {
-			const warehouse = warehouses.find(warehouse => warehouse.uuid === id);
+			const warehouse = warehouses.find(warehouse => warehouse.id === id);
 			if (!warehouse) return setRedirect("/warehouses");
 
 			setName(warehouse.name);
 			setStreet(warehouse.address.street);
-			setTown(warehouse.address.city);
+			setTown(warehouse.address.town);
 			setPostcode(warehouse.address.postcode);
-			setUuid(warehouse.uuid);
 		}, [id]);
 	
 		function updateWarehouse() {
-			fetch(`${process.env.REACT_APP_API_ENDPOINT}/warehouse/${uuid}`, {
+			fetch(`${process.env.REACT_APP_API_ENDPOINT}/warehouse/${id}`, {
 				method: 'PUT',
 				headers: {
 					'Authorization': user.token,
@@ -132,13 +129,13 @@ function Warehouses(props) {
 			.then((response) => {
 				response.json().then(data => {
 					if (!data.success) {
-						setError(data.error || data.message || 'An error occured. Please try again later');
+						setError(data.error || 'An error occured. Please try again later');
 						return setLoading(false);
 					}
 
+					setRedirect(`/warehouses`);
 					setError(null);
 					setWarehouses(data.data);
-					setRedirect(`/warehouses/${data.id}`);
 					return setLoading(false);
 	
 				}).catch((error) => {
@@ -190,13 +187,13 @@ function Warehouses(props) {
 	function WarehouseCard(props) {
 		const { warehouse } = props;
 		return (
-			<Card link as={Link} to={`/warehouses/${warehouse.uuid}`}>
+			<Card link as={Link} to={`/warehouses/${warehouse.id}`}>
 				<Card.Content>
 					<Card.Header>{warehouse.name}</Card.Header>
 					<Card.Description>
 						<p>
 							{warehouse.address.street}
-							<br />{warehouse.address.city}
+							<br />{warehouse.address.town}
 							<br />{warehouse.address.postcode}
 						</p>
 					</Card.Description>
@@ -264,10 +261,7 @@ function Warehouses(props) {
 
 					<Map items={mapItems} />
 				</>
-			}
-
-			
-			 
+			}	 
 		</Container>
 	);
 }

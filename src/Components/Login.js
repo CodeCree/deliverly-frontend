@@ -16,7 +16,7 @@ function Login(props) {
 		if (token) {
 			setLoading(true);
 
-			fetch(`${process.env.REACT_APP_API_ENDPOINT}/user/me`, {
+			fetch(`${process.env.REACT_APP_API_ENDPOINT}/users/me`, {
 				method: 'GET',
 				headers: {
 					'Authorization': token
@@ -25,7 +25,7 @@ function Login(props) {
 			.then((response) => {
 				response.json().then(data => {
 					if (!data.success) {
-						setError(data.message || data.error || 'An error occured. Please try again later');
+						setError(data.error || 'An error occured. Please try again later');
 
 						sessionStorage.removeItem('token');
 						localStorage.removeItem('token');
@@ -34,9 +34,11 @@ function Login(props) {
 					}
 
 					setUser({
-						'name': data.data.email,
-						'token': token,
-						'operator': data.data.operator
+						firstName: data.data.firstName,
+						lastName: data.data.lastName,
+						email: data.data.email,
+						token: token,
+						operator: data.data.operator
 					});
 
 					setError(null);
@@ -59,7 +61,7 @@ function Login(props) {
 
 	function attemptLogin() {
 		setLoading(true);
-		fetch(`${process.env.REACT_APP_API_ENDPOINT}/user/login`, {
+		fetch(`${process.env.REACT_APP_API_ENDPOINT}/users/login`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -72,14 +74,16 @@ function Login(props) {
 		.then((response) => {
 			response.json().then(data => {
 				if (!data.success) {
-					setError(data.message || data.error || 'An error occured. Please try again later');
+					setError(data.error || 'An error occured. Please try again later');
 					return setLoading(false);
 				}
 
 				setUser({
-					'name': data.email,
-					'token': data.token,
-					'operator': data.operator
+					firstName: data.firstName,
+					lastName: data.lastName,
+					email: data.email,
+					token: data.token,
+					operator: data.operator
 				});
 
 				sessionStorage.setItem('token', data.token);

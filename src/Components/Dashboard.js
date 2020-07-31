@@ -8,7 +8,7 @@ function Dashboard(props) {
 
 	return (
 		<Container>
-			<Header as="h1">Welcome to Deliverly, {user.name} </Header>
+			<Header as="h1">Welcome to Deliverly, {user.firstName} </Header>
 
 			<Card.Group itemsPerRow={4} doubling>
 				<Card link as={Link} to="/routes">
