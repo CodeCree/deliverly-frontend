@@ -15,6 +15,7 @@ function Users(props) {
 		const [ operator, setOperator ] = useState(false);
 
 		function createUser() {
+			setLoading(true);
 			fetch(`${process.env.REACT_APP_API_ENDPOINT}/users`, {
 				method: 'POST',
 				headers: {
@@ -104,21 +105,23 @@ function Users(props) {
 		const [ password, setPassword ] = useState('');
 		const [ operator, setOperator ] = useState(false);
 		const [ name, setName ] = useState('');
-		const [ self, setSelf ] = useState(false);
 
 		useEffect(() => {
 			const user = users.find(user => user.id === id);
 			if (!user) return setRedirect("/users");
+			if (user.id === props.user.id) {
+				setRedirect('/account');
+			}
 
 			setFirstName(user.firstName);
 			setLastName(user.lastName);
 			setName(`${user.firstName} ${user.lastName}`);
 			setEmail(user.email);
 			setOperator(user.operator);
-			setSelf(user.id === props.user.id);
 		}, [id]);
 	
 		function updateUser() {
+			setLoading(true);
 			fetch(`${process.env.REACT_APP_API_ENDPOINT}/users/${id}`, {
 				method: 'PUT',
 				headers: {
@@ -130,7 +133,7 @@ function Users(props) {
 					lastName: lastName,
 					email: email,
 					password: password || undefined,
-					operator: self || operator
+					operator: operator
 				})
 			})
 			.then((response) => {
@@ -159,7 +162,7 @@ function Users(props) {
 		return (
 			<Modal open={true} onClose={() => setRedirect('/users')}>
 				{ redirect && <Redirect to={redirect} /> }
-				<Modal.Header>Update {name} {self && '(me)'}</Modal.Header>
+				<Modal.Header>Update {name}</Modal.Header>
 				<Modal.Content>
 					<Form onSubmit={updateUser} loading={loading}>
 						{ error && <Message negative>{error}</Message> }
@@ -186,7 +189,7 @@ function Users(props) {
 							</Form.Field>
 						</Form.Group>
 
-						{ !self && <Form.Checkbox inline label='Operator' checked={operator} onChange={(e, state) => setOperator(state.checked)} /> }
+						<Form.Checkbox inline label='Operator' checked={operator} onChange={(e, state) => setOperator(state.checked)} />
 	
 						<Button type="submit">Update</Button>
 					</Form>
@@ -199,7 +202,7 @@ function Users(props) {
 	function UserCard(props) {
 		const { user, self } = props;
 		return (
-			<Card link as={Link} to={`/users/${user.id}`} color={self ? 'orange' : user.operator && 'teal'}>
+			<Card link as={Link} to={self ? '/account' : `/users/${user.id}`} color={self ? 'orange' : user.operator && 'teal'}>
 				<Card.Content>
 					<Card.Header>{user.firstName} {user.lastName}</Card.Header>
 					<Card.Meta>

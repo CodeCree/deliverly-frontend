@@ -64,7 +64,7 @@ function App() {
 
 			<Switch>
 				<Route path="/" exact render={() => <Dashboard user={user} />} />
-				<Route path="/account" render={() => <Account user={user} />} />
+				<Route path="/account" render={() => <Account user={user} setUser={setUser} />} />
 				<Route path="/route/:id" render={() => <ShowDeliveryRoute user={user} />} />
 				<Route path="/routes" render={() => <IndexDeliveryRoutes user={user} />} />
 				<Route path="/packages/scan" render={() => <PackageScanner user={user} />} />

@@ -45,9 +45,9 @@ function IndexDeliveryRoutes(props) {
 					setError(null);
 					
 					setWarehouses(data.data.map(warehouse => { return {
-						key: warehouse.uuid,
-						value: warehouse.uuid,
-						text: `${warehouse.name} - ${warehouse.address.street}, ${warehouse.address.city}, ${warehouse.address.postcode}`
+						key: warehouse.id,
+						value: warehouse.id,
+						text: `${warehouse.name} - ${warehouse.address.street}, ${warehouse.address.town}, ${warehouse.address.postcode}`
 					}}));
 
 					return setLoading(false);
@@ -81,6 +81,7 @@ function IndexDeliveryRoutes(props) {
 			})
 			.then((response) => {
 				response.json().then(data => {
+					console.log(data);
 					if (!data.success) {
 						setError(data.error || 'An error occured. Please try again later');
 						return setLoading(false);
