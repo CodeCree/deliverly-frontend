@@ -42,7 +42,7 @@ function App() {
 					<Header as="h1">Welcome to Deliverly</Header>
 					Deliverly is a delivery platform...
 
-					<Message icon as="a" href="/track">
+					<Message icon as="a" href="/track/">
 						<Icon name="box" />
 						<Message.Content>
 							<Message.Header>Tracking a Package?</Message.Header>

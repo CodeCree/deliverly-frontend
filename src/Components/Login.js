@@ -5,8 +5,8 @@ function Login(props) {
 	const { setUser } = props;
 	const [ error, setError ] = useState(null);
 	const [ loading, setLoading ] = useState(false);
-	const [ email, setEmail ] = useState('test@codecree.co.uk');
-	const [ password, setPassword ] = useState('password');
+	const [ email, setEmail ] = useState('');
+	const [ password, setPassword ] = useState('');
 	const [ remember, setRemember ] = useState(false);
 
 	useEffect(() => {
